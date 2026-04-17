@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Can I Drink?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      color: #fff;
+      text-align: center;
+      background-color: #333;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .content.ready {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .title {
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: clamp(10px, 2vh, 28px);
+    }
+
+    .circle {
+      width: clamp(260px, 55vmin, 420px);
+      height: clamp(260px, 55vmin, 420px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #555;
+      transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .circle.yes,
+    .circle.no {
+      background-color: #888;
+      transform: scale(1.03);
+    }
+
+    .answer {
+      font-size: clamp(56px, 10vmin, 88px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .answer.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .details {
+      margin-top: clamp(12px, 2vh, 32px);
+      font-size: clamp(14px, 2vw, 16px);
+      font-weight: 400;
+      opacity: 0;
+      transition: opacity 0.5s ease 0.15s;
+    }
+
+    .details.visible {
+      opacity: 0.5;
+    }
+
+    .loading-text {
+      font-size: clamp(12px, 1.6vw, 16px);
+      font-weight: 300;
+      opacity: 0.35;
+      position: absolute;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 16px;
+      left: 20px;
+      font-size: 11px;
+      opacity: 0.35;
+      font-weight: 300;
+    }
+
+    .footer a {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-text" id="loading">checking the weather</div>
+  <div class="content" id="content">
+    <div class="title">CAN I DRINK?</div>
+    <div class="circle" id="circle">
+      <div class="answer" id="answer"></div>
+    </div>
+    <div class="details" id="details"></div>
+  </div>
+  <div class="footer">site by juju &middot; inspired by <a href="http://www.istheltrainfucked.com" target="_blank">istheltrainfucked.com</a></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    function render(canDrink, tempF, city) {
+      const loc = city ? ` in ${city}` : '';
+
+      // hide loading
+      $('loading').style.opacity = '0';
+
+      // reveal container
+      $('content').classList.add('ready');
+
+      // stagger the answer in
+      setTimeout(() => {
+        $('answer').textContent = canDrink ? 'YUP' : 'NOPE';
+        $('answer').classList.add('visible');
+        $('circle').className = 'circle ' + (canDrink ? 'yes' : 'no');
+      }, 200);
+
+      // details fade in last
+      setTimeout(() => {
+        if (canDrink && tempF >= 65) {
+          $('details').textContent = `${Math.round(tempF)}°F${loc} — it's warm. you've earned it.`;
+        } else if (canDrink && tempF <= 32) {
+          $('details').textContent = `${Math.round(tempF)}°F${loc} — it's freezing. you need it.`;
+        } else {
+          $('details').textContent = `${Math.round(tempF)}°F${loc} — tough it out.`;
+        }
+        $('details').classList.add('visible');
+      }, 450);
+    }
+
+    function renderError(msg) {
+      $('loading').style.opacity = '0';
+      $('content').classList.add('ready');
+      setTimeout(() => {
+        $('answer').textContent = '?';
+        $('answer').classList.add('visible');
+      }, 200);
+      setTimeout(() => {
+        $('details').textContent = msg;
+        $('details').classList.add('visible');
+      }, 450);
+    }
+
+    async function getWeather(lat, lon) {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&temperature_unit=fahrenheit`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.current.temperature_2m;
+    }
+
+    async function getCity(lat, lon) {
+      const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.address.city || data.address.town || data.address.village || data.address.county || '';
+    }
+
+    async function init() {
+      if (!navigator.geolocation) {
+        renderError("your browser doesn't support geolocation");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const [tempF, city] = await Promise.all([
+              getWeather(pos.coords.latitude, pos.coords.longitude),
+              getCity(pos.coords.latitude, pos.coords.longitude).catch(() => '')
+            ]);
+            const canDrink = tempF >= 65 || tempF <= 32;
+            render(canDrink, tempF, city);
+          } catch (e) {
+            renderError("couldn't fetch the weather. try again.");
+          }
+        },
+        () => {
+          renderError("allow location access to find out.");
+        }
+      );
+    }
+
+    init();
+  </script>
+</body>
+</html>
