@@ -151,29 +151,29 @@
         const t = Math.round(tempF);
         if (canDrink && tempF >= 65) {
           const lines = [
-            `${t}°F${loc} — it's hot. get absolutely wrecked.`,
-            `${t}°F${loc} — sun's out, drinks out.`,
-            `${t}°F${loc} — it's giving patio drinks. go off.`,
-            `${t}°F${loc} — warm enough to make bad decisions.`,
-            `${t}°F${loc} — shorts weather. go be stupid.`,
+            `${t}°F${loc}. looks like we're drinking.`,
+            `${t}°F${loc}. yea you're good.`,
+            `${t}°F${loc}. perf. go for it.`,
+            `${t}°F${loc}. it's nice out. you'd be dumb not to.`,
+            `${t}°F${loc}. patio weather. do what you gotta do.`,
           ];
           $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         } else if (canDrink && tempF <= 32) {
           const lines = [
-            `${t}°F${loc} — it's freezing. drink to survive.`,
-            `${t}°F${loc} — cold as hell. whiskey is medicine.`,
-            `${t}°F${loc} — your face hurts. you need this.`,
-            `${t}°F${loc} — hypothermia vibes. drink through it.`,
-            `${t}°F${loc} — this weather is violence. drink immediately.`,
+            `${t}°F${loc}. it's freezing. you need this.`,
+            `${t}°F${loc}. yea it's cold. drink something warm. or not warm.`,
+            `${t}°F${loc}. brutal out. you've earned it.`,
+            `${t}°F${loc}. your face hurts. go ahead.`,
+            `${t}°F${loc}. cold as hell. honestly just stay inside and drink.`,
           ];
           $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         } else {
           const lines = [
-            `${t}°F${loc} — mid-ass weather. stay sober.`,
-            `${t}°F${loc} — it's giving nothing. no drinks for you.`,
-            `${t}°F${loc} — tragically moderate. suffer through it.`,
-            `${t}°F${loc} — not hot, not cold. just boring. no booze.`,
-            `${t}°F${loc} — the weather is mid and so is your night.`,
+            `${t}°F${loc}. nah. not today.`,
+            `${t}°F${loc}. it's fine out. you're fine. no drinks.`,
+            `${t}°F${loc}. just a weird mid temp. sit this one out.`,
+            `${t}°F${loc}. not hot enough, not cold enough. sorry.`,
+            `${t}°F${loc}. tough luck. go drink water or something.`,
           ];
           $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         }
