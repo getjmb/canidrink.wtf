@@ -148,12 +148,34 @@
 
       // details fade in last
       setTimeout(() => {
+        const t = Math.round(tempF);
         if (canDrink && tempF >= 65) {
-          $('details').textContent = `${Math.round(tempF)}°F${loc} — it's warm. you've earned it.`;
+          const lines = [
+            `${t}°F${loc} — it's hot. get absolutely wrecked.`,
+            `${t}°F${loc} — sun's out, drinks out.`,
+            `${t}°F${loc} — it's giving patio drinks. go off.`,
+            `${t}°F${loc} — warm enough to make bad decisions.`,
+            `${t}°F${loc} — shorts weather. bottomless brunch energy.`,
+          ];
+          $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         } else if (canDrink && tempF <= 32) {
-          $('details').textContent = `${Math.round(tempF)}°F${loc} — it's freezing. you need it.`;
+          const lines = [
+            `${t}°F${loc} — it's freezing. drink to survive.`,
+            `${t}°F${loc} — cold as hell. whiskey is medicine.`,
+            `${t}°F${loc} — your face hurts. you need this.`,
+            `${t}°F${loc} — hypothermia vibes. get hammered.`,
+            `${t}°F${loc} — this weather is violence. drink immediately.`,
+          ];
+          $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         } else {
-          $('details').textContent = `${Math.round(tempF)}°F${loc} — tough it out.`;
+          const lines = [
+            `${t}°F${loc} — mid-ass weather. stay sober.`,
+            `${t}°F${loc} — it's giving nothing. no drinks for you.`,
+            `${t}°F${loc} — tragically moderate. suffer through it.`,
+            `${t}°F${loc} — not hot, not cold. just boring. no booze.`,
+            `${t}°F${loc} — the weather is mid and so is your night.`,
+          ];
+          $('details').textContent = lines[Math.floor(Math.random() * lines.length)];
         }
         $('details').classList.add('visible');
       }, 450);
